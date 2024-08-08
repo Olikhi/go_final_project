@@ -31,7 +31,7 @@ type TasksResponse struct {
 	Error string `json:"error,omitempty"`
 }
 
-const DATE_FORMAT = "20060102"
+const DateFormat = "20060102"
 
 func startServer() {
 	const webDir = "web"
@@ -54,7 +54,7 @@ func startServer() {
 }
 
 func NextDate(now time.Time, date string, repeat string) (time.Time, error) {
-	startDate, err := time.Parse(DATE_FORMAT, date)
+	startDate, err := time.Parse(DateFormat, date)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -95,7 +95,7 @@ func getDate(s string) (time.Time, error) {
 		return time.Now(), nil
 	}
 
-	date, err := time.Parse(DATE_FORMAT, s)
+	date, err := time.Parse(DateFormat, s)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -140,7 +140,7 @@ func setOkResponse(w http.ResponseWriter) {
 func NextDateHandler(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	s := q["now"][0]
-	now, err := time.Parse(DATE_FORMAT, s)
+	now, err := time.Parse(DateFormat, s)
 	if err != nil {
 		http.Error(w, "cant parse now: "+s, http.StatusBadRequest)
 	}
@@ -151,7 +151,7 @@ func NextDateHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "cant get next date: "+err.Error(), http.StatusBadRequest)
 	}
-	fmt.Fprint(w, nextDate.Format(DATE_FORMAT))
+	fmt.Fprint(w, nextDate.Format(DateFormat))
 }
 
 func taskHandler(w http.ResponseWriter, r *http.Request) {
@@ -256,8 +256,8 @@ func addTask(w http.ResponseWriter, r *http.Request) {
 		setErrorResponse(w, "bad date format", err)
 		return
 	}
-	strDate := date.Format(DATE_FORMAT)
-	if strDate < time.Now().Format(DATE_FORMAT) {
+	strDate := date.Format(DateFormat)
+	if strDate < time.Now().Format(DateFormat) {
 		if task.Repeat == "" {
 			date = time.Now()
 		} else {
@@ -267,7 +267,7 @@ func addTask(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		strDate = date.Format(DATE_FORMAT)
+		strDate = date.Format(DateFormat)
 	}
 
 	id, err := insertTask(strDate, task.Title, task.Comment, task.Repeat)
@@ -315,8 +315,8 @@ func putTask(w http.ResponseWriter, r *http.Request) {
 		setErrorResponse(w, "bad date format", err)
 		return
 	}
-	strDate := date.Format(DATE_FORMAT)
-	if strDate < time.Now().Format(DATE_FORMAT) {
+	strDate := date.Format(DateFormat)
+	if strDate < time.Now().Format(DateFormat) {
 		if task.Repeat == "" {
 			date = time.Now()
 		} else {
@@ -326,7 +326,7 @@ func putTask(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		strDate = date.Format(DATE_FORMAT)
+		strDate = date.Format(DateFormat)
 	}
 	id, err := strconv.ParseInt(task.ID, 10, 32)
 	if err != nil {
@@ -381,7 +381,7 @@ func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
 		setErrorResponse(w, "failed to get next date", err)
 		return
 	}
-	strDate := date.Format(DATE_FORMAT)
+	strDate := date.Format(DateFormat)
 
 	err = updateTask(int(id), strDate, task.Title, task.Comment, task.Repeat)
 	if err != nil {
@@ -406,7 +406,7 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		setErrorResponse(w, "failed to marshal response", err)
 		return
 	}

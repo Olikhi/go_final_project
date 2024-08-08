@@ -1,4 +1,4 @@
-module github.com/Yandex-Practicum/go_final_project
+module github.com/Olikhi/go_final_project
 
 go 1.21.3
 

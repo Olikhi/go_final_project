@@ -45,9 +45,10 @@ func installDb(db *sql.DB) {
 	if err != nil {
 		log.Printf("%q: %s\n", err, sqlStmt)
 	}
+
 }
 
-const HUNDRED = 100
+const Limit = 100
 
 func getAllTasks() ([]Task, error) {
 
